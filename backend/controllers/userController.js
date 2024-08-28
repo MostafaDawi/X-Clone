@@ -2,7 +2,7 @@ import User from "../models/userModel.js";
 import Notification from "../models/notificationModel.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
-import { auth, storage } from "../storage/firebaseStrorage.js";
+import { uploadProfileOrCoverImg } from "./uploadImage.js";
 
 export const getUserProfile = async (req, res) => {
   const { username } = req.params;
@@ -191,52 +191,5 @@ export const updateUserProfile = async (req, res) => {
   } catch (error) {
     console.log("Error in updateUserProfile", error.message);
     res.status(500).json({ error: error.message });
-  }
-};
-
-const uploadProfileOrCoverImg = async (profileImgUrl, user) => {
-  try {
-    // Check if the user already has a profile image and delete it from Firebase Storage
-    if (user.profileImg) {
-      try {
-        // Assuming the profileImg URL is from Firebase Storage, extract the file path
-        const oldProfilePicRef = storage.refFromURL(user.profileImg);
-
-        // Delete the old image from Firebase Storage
-        await oldProfilePicRef.delete();
-        console.log("Old profile picture deleted successfully.");
-      } catch (error) {
-        console.error("Error deleting old profile picture:", error);
-      }
-    }
-
-    // Fetch the new image as a blob
-    const response = await fetch(profileImgUrl);
-    const blob = await response.blob();
-
-    // Generate a unique filename, you could also use the user ID or other identifiers
-    const fileName = `profile_${Date.now()}.png`;
-
-    // Reference to Firebase Storage for the new image
-    const profilePicRef = storage.ref(
-      `profile_pictures/${user.uid}/${fileName}`
-    );
-
-    // Upload the blob to Firebase Storage
-    const snapshot = await profilePicRef.put(blob);
-
-    // Get the download URL of the uploaded image
-    const downloadURL = await snapshot.ref.getDownloadURL();
-
-    // Update the user's profile with the new image URL
-    user.profileImg = downloadURL;
-
-    console.log("New profile picture uploaded successfully!");
-    console.log("Download URL:", downloadURL);
-
-    return downloadURL;
-  } catch (error) {
-    console.error("Error uploading new profile picture:", error);
-    throw error;
   }
 };
