@@ -47,7 +47,7 @@ export const signup = async (req, res) => {
         coverImg: newUser.coverImg,
       });
 
-      console.log("USer created successfully!");
+      console.log("User created successfully!");
     } else {
       res.status(400).json({ error: "Invalid user data" });
     }
@@ -83,25 +83,26 @@ export const login = async (req, res) => {
     console.log("User logged in successfully!");
   } catch (err) {
     console.log("Error in login controller", err.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 export const logout = async (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
-    res.status(200).json({ message: "Logged out successfully!" });
+    console.log("Logged out successfully!");
+    return res.status(200).json({ message: "Logged out successfully!" });
   } catch (err) {
     console.log("Error: ", err.message);
-    res.status(500).json({ Error: "Internal Server Error" });
+    return res.status(500).json({ Error: "Internal Server Error" });
   }
 };
 
 export const getMe = async (req, res) => {
   try {
-    res.status(200).json(req.user);
+    return res.status(200).json(req.user);
   } catch (err) {
     console.log("Error authenticating user ", err.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };

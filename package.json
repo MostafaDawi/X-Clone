@@ -12,6 +12,7 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-query": "^5.52.3",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.4.0",
     "cookie-parser": "^1.4.6",
@@ -21,7 +22,8 @@
     "firebase": "^10.13.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
