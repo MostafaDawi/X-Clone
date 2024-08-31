@@ -156,10 +156,10 @@ export const getAllPosts = async (req, res) => {
       });
     if (posts.length === 0) return res.status(200).json([]);
 
-    res.status(200).json(posts);
+    return res.status(200).json(posts);
   } catch (error) {
     console.log("Error while fetching the posts", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
