@@ -155,7 +155,7 @@ export const getAllPosts = async (req, res) => {
         select: "-password",
       });
     if (posts.length === 0) return res.status(200).json([]);
-
+    console.log("requested posts are: ", posts);
     return res.status(200).json(posts);
   } catch (error) {
     console.log("Error while fetching the posts", error.message);
@@ -232,7 +232,7 @@ export const getUserPosts = async (req, res) => {
     const { username } = req.params;
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ error: "User not found" });
-
+    console.log("Received request from user:", username);
     const myPosts = await Post.find({
       user: { $in: user._id },
     })
@@ -246,9 +246,9 @@ export const getUserPosts = async (req, res) => {
         select: "-password",
       });
 
-    res.status(200).json(myPosts);
+    return res.status(200).json(myPosts);
   } catch (error) {
     console.log("Error fetching user's posts", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
