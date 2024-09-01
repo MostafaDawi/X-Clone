@@ -23,7 +23,7 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "5mb" })); // Image size shouldn't be too big otherwise the system is prone to DoS attacks
 app.use(express.urlencoded({ extended: true })); // parse form data
 
 app.use("/api/auth", authRoute);
