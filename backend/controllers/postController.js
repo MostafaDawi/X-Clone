@@ -61,7 +61,11 @@ export const likeUnlikePost = async (req, res) => {
         { _id: req.user._id },
         { $pull: { likedPosts: post._id } }
       );
-      res.status(200).json({ message: "Post unliked!" });
+
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== req.user._id.toString()
+      );
+      res.status(200).json(updatedLikes);
     } else {
       // Like Post
       await Post.updateOne(
@@ -78,7 +82,11 @@ export const likeUnlikePost = async (req, res) => {
         type: "like",
       });
       await newNotif.save();
-      res.status(200).json({ message: "Post liked!", notification: newNotif });
+
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== req.user._id.toString()
+      );
+      res.status(200).json(updatedLikes);
     }
   } catch (error) {
     console.log("Error while liking or unliking the post", error.message);
