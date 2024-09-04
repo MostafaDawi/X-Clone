@@ -3,16 +3,27 @@ import { BiRepost } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "./LoadingSpinner";
 import toast from "react-hot-toast";
+import { formatPostDate } from "../../utils/date";
 
 const Post = ({ post }) => {
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const queryClient = useQueryClient();
   const [comments, setComments] = useState(post.comments);
+  const [likes, setLikes] = useState(post.likes);
+  const [isLiked, setIsLiked] = useState(post.likes.includes(authUser._id));
+  const [uilike, setuiLike] = useState(isLiked);
+  const [comment, setComment] = useState("");
+
+  const postOwner = post.user;
+
+  const isMyPost = authUser._id === post.user._id;
+
+  const formattedDate = formatPostDate(post.createdAt);
 
   // function to handle deleting a post
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
@@ -50,14 +61,17 @@ const Post = ({ post }) => {
     },
     onSuccess: (updatedLikes) => {
       // queryClient.invalidateQueries("posts");
-      queryClient.setQueryData(["posts"], (oldData) => {
-        return oldData.map((p) => {
-          if (p._id === post._id) {
-            return { ...p, likes: updatedLikes };
-          }
-          return p;
-        });
-      });
+      // queryClient.setQueryData(["posts"], (oldData) => {
+      //   return oldData.map((p) => {
+      //     if (p._id === post._id) {
+      //       return { ...p, likes: updatedLikes };
+      //     }
+      //     return p;
+      //   });
+      // });
+      setLikes(updatedLikes);
+      console.log("is user still liked", likes.includes(authUser._id));
+      // setIsLiked(likes.includes(authUser._id));
     },
     onError: (error) => {
       throw new Error(error.message);
@@ -86,6 +100,7 @@ const Post = ({ post }) => {
     onSuccess: (newComments) => {
       toast.success("Comment sent!");
       // queryClient.invalidateQueries(["posts"]);
+      setComment("");
       setComments(newComments);
       console.log("New comments are :", newComments);
     },
@@ -93,15 +108,6 @@ const Post = ({ post }) => {
       toast.error(`Something went wrong ${error.message}`);
     },
   });
-
-  const [comment, setComment] = useState("");
-
-  const postOwner = post.user;
-  const isLiked = post.likes.includes(authUser._id);
-
-  const isMyPost = authUser._id === post.user._id;
-
-  const formattedDate = "1h";
 
   const handleDeletePost = () => {
     deletePost();
@@ -113,11 +119,15 @@ const Post = ({ post }) => {
   };
 
   const handleLikePost = () => {
+    setuiLike(!uilike);
     if (isLiking) return;
     likePost();
+    setIsLiked(likes.includes(authUser._id));
   };
 
-  console.log(comments);
+  useEffect(() => {
+    setIsLiked(likes.includes(authUser._id));
+  }, [likes]);
 
   return (
     <>
@@ -176,7 +186,7 @@ const Post = ({ post }) => {
               >
                 <FaRegComment className="w-4 h-4  text-slate-500 group-hover:text-sky-400" />
                 <span className="text-sm text-slate-500 group-hover:text-sky-400">
-                  {post.comments.length}
+                  {comments.length}
                 </span>
               </div>
               {/* We're using Modal Component from DaisyUI */}
@@ -247,19 +257,21 @@ const Post = ({ post }) => {
                 className="flex gap-1 items-center group cursor-pointer"
                 onClick={handleLikePost}
               >
-                {!isLiked && !isLiking && (
+                {!uilike && (
                   <FaRegHeart className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
                 )}
-                {isLiked && !isLiking && (
+                {uilike && (
                   <FaRegHeart className="w-4 h-4 cursor-pointer text-pink-500 " />
                 )}
 
                 <span
-                  className={`text-sm text-slate-500 group-hover:text-pink-500 ${
-                    isLiked ? "text-pink-500" : ""
+                  className={`text-sm  ${
+                    uilike
+                      ? "text-pink-500"
+                      : "text-slate-500 group-hover:text-pink-500"
                   }`}
                 >
-                  {post.likes.length}
+                  {likes.length}
                 </span>
               </div>
             </div>

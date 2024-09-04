@@ -68,14 +68,12 @@ export const likeUnlikePost = async (req, res) => {
       res.status(200).json(updatedLikes);
     } else {
       // Like Post
-      await Post.updateOne(
-        { _id: post._id },
-        { $push: { likes: req.user._id } }
-      );
+      post.likes.push(req.user._id);
       await User.updateOne(
         { _id: req.user._id },
         { $push: { likedPosts: post._id } }
       );
+      await post.save();
       const newNotif = new Notification({
         from: req.user._id,
         to: post.user,
@@ -83,9 +81,7 @@ export const likeUnlikePost = async (req, res) => {
       });
       await newNotif.save();
 
-      const updatedLikes = post.likes.filter(
-        (id) => id.toString() !== req.user._id.toString()
-      );
+      const updatedLikes = post.likes;
       res.status(200).json(updatedLikes);
     }
   } catch (error) {
@@ -114,14 +110,12 @@ export const commentOnPost = async (req, res) => {
     // await post.updateOne({ _id: postId }, { $push: { comments: comment } });
     post.comments.push(comment);
     await post.save();
-    res
-      .status(200)
-      .json(
-        await Post.findById(postId).populate({
-          path: "comments.user",
-          select: "-password",
-        })
-      );
+    res.status(200).json(
+      await Post.findById(postId).populate({
+        path: "comments.user",
+        select: "-password",
+      })
+    );
   } catch (error) {
     console.log("Error while commenting on post", error.message);
     res.status(500).json({ error: "Internal Server Error" });
