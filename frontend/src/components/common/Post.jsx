@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 const Post = ({ post }) => {
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const queryClient = useQueryClient();
+  const [comments, setComments] = useState(post.comments);
 
   // function to handle deleting a post
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
@@ -64,7 +65,7 @@ const Post = ({ post }) => {
   });
 
   // Function to handle the commenting on post
-  const { mutate: commentOnPost, isPending } = useMutation({
+  const { mutate: commentOnPost, isPending: isCommenting } = useMutation({
     mutationFn: async ({ comment }) => {
       try {
         const res = await fetch(`api/posts/comment/${post._id}`, {
@@ -75,16 +76,18 @@ const Post = ({ post }) => {
           body: JSON.stringify({ text: comment }),
         });
         const data = await res.json();
-        console.log(data);
         if (!res.ok) throw new Error(data.error || "Something went wrong");
-        return data;
+        console.log("newly received data is ", data);
+        return data.comments;
       } catch (error) {
         throw new Error(error.message);
       }
     },
-    onSuccess: () => {
+    onSuccess: (newComments) => {
       toast.success("Comment sent!");
-      queryClient.invalidateQueries(["posts"]);
+      // queryClient.invalidateQueries(["posts"]);
+      setComments(newComments);
+      console.log("New comments are :", newComments);
     },
     onError: (error) => {
       toast.error(`Something went wrong ${error.message}`);
@@ -92,14 +95,13 @@ const Post = ({ post }) => {
   });
 
   const [comment, setComment] = useState("");
+
   const postOwner = post.user;
   const isLiked = post.likes.includes(authUser._id);
 
   const isMyPost = authUser._id === post.user._id;
 
   const formattedDate = "1h";
-
-  const isCommenting = false;
 
   const handleDeletePost = () => {
     deletePost();
@@ -115,7 +117,7 @@ const Post = ({ post }) => {
     likePost();
   };
 
-  console.log(comment);
+  console.log(comments);
 
   return (
     <>
@@ -185,12 +187,12 @@ const Post = ({ post }) => {
                 <div className="modal-box rounded border border-gray-600">
                   <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
                   <div className="flex flex-col gap-3 max-h-60 overflow-auto">
-                    {post.comments.length === 0 && (
+                    {comments.length === 0 && (
                       <p className="text-sm text-slate-500">
                         No comments yet 🤔 Be the first one 😉
                       </p>
                     )}
-                    {post.comments.map((comment) => (
+                    {comments.map((comment) => (
                       <div key={comment._id} className="flex gap-2 items-start">
                         <div className="avatar">
                           <div className="w-8 rounded-full">
@@ -227,7 +229,7 @@ const Post = ({ post }) => {
                       onChange={(e) => setComment(e.target.value)}
                     />
                     <button className="btn btn-primary rounded-full btn-sm text-white px-4">
-                      {isPending ? <LoadingSpinner size="sm" /> : "Post"}
+                      {isCommenting ? <LoadingSpinner size="sm" /> : "Post"}
                     </button>
                   </form>
                 </div>

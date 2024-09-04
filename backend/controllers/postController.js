@@ -100,7 +100,10 @@ export const commentOnPost = async (req, res) => {
     const userId = req.user._id;
     const postId = req.params.id;
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate({
+      path: "user",
+      select: "-password",
+    });
     if (!post) return res.status(404).json({ error: "Post not found" });
 
     if (!text)
@@ -111,7 +114,14 @@ export const commentOnPost = async (req, res) => {
     // await post.updateOne({ _id: postId }, { $push: { comments: comment } });
     post.comments.push(comment);
     await post.save();
-    res.status(200).json(post);
+    res
+      .status(200)
+      .json(
+        await Post.findById(postId).populate({
+          path: "comments.user",
+          select: "-password",
+        })
+      );
   } catch (error) {
     console.log("Error while commenting on post", error.message);
     res.status(500).json({ error: "Internal Server Error" });
