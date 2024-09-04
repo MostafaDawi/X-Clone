@@ -63,6 +63,34 @@ const Post = ({ post }) => {
     },
   });
 
+  // Function to handle the commenting on post
+  const { mutate: commentOnPost, isPending } = useMutation({
+    mutationFn: async ({ comment }) => {
+      try {
+        const res = await fetch(`api/posts/comment/${post._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: comment }),
+        });
+        const data = await res.json();
+        console.log(data);
+        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        return data;
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Comment sent!");
+      queryClient.invalidateQueries(["posts"]);
+    },
+    onError: (error) => {
+      toast.error(`Something went wrong ${error.message}`);
+    },
+  });
+
   const [comment, setComment] = useState("");
   const postOwner = post.user;
   const isLiked = post.likes.includes(authUser._id);
@@ -79,12 +107,15 @@ const Post = ({ post }) => {
 
   const handlePostComment = (e) => {
     e.preventDefault();
+    commentOnPost({ comment });
   };
 
   const handleLikePost = () => {
     if (isLiking) return;
     likePost();
   };
+
+  console.log(comment);
 
   return (
     <>
@@ -196,11 +227,7 @@ const Post = ({ post }) => {
                       onChange={(e) => setComment(e.target.value)}
                     />
                     <button className="btn btn-primary rounded-full btn-sm text-white px-4">
-                      {isCommenting ? (
-                        <span className="loading loading-spinner loading-md"></span>
-                      ) : (
-                        "Post"
-                      )}
+                      {isPending ? <LoadingSpinner size="sm" /> : "Post"}
                     </button>
                   </form>
                 </div>
