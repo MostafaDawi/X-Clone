@@ -9,6 +9,8 @@ export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findOne({ username }).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
+    console.log("Backend sending user ", user);
+
     res.status(200).json(user);
   } catch (error) {
     console.log("Error in getUserProfile, ", error.message);
@@ -97,88 +99,96 @@ export const getSuggestedUsers = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
   try {
-    const { fullname, username, email, currentPass, newPass, bio, link } =
-      req.body;
-    const { profileImg, coverImg } = req.body;
+    const {
+      fullname,
+      username,
+      email,
+      currentPassword,
+      newPassword,
+      bio,
+      link,
+    } = req.body;
 
     let user = await User.findById(req.user._id);
     if (!user) {
       res.status(404).json({ error: "User not found" });
     }
 
-    if ((!currentPass && newPass) || (!newPass && currentPass)) {
+    if (
+      (!currentPassword && newPassword) ||
+      (!newPassword && currentPassword)
+    ) {
       return res
         .status(400)
         .json({ error: "Please enter both current and new password" });
     }
 
-    if (currentPass && newPass) {
-      const isMatching = await bcrypt.compare(currentPass, user.password);
+    if (currentPassword && newPassword) {
+      const isMatching = await bcrypt.compare(currentPassword, user.password);
       if (!isMatching) {
         return res.status(400).json({ error: "Current password is not valid" });
       }
-      if (newPass.length < 4) {
+      if (newPassword.length < 4) {
         return res
           .status(400)
           .json({ error: "Password is less than 4 characters" });
       }
 
       const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(newPass, salt);
-
-      //Cloudinary is not available in my country,
-      // but this is how it goes if the user wants to edit profile or cover images
-      //------------------------------------------------------------------------------
-      // if (profileImg) {
-      //   if (user.profileImg) {
-      //     //Let's say the img url is like this: https://res.cloudinary.com/something/something/123456.png
-      //     await cloudinary.uploader.destroy(
-      //       user.profileImg.split("/").pop().split(".")[0]
-      //     );
-      //   }
-      //   const uploadedImg = await cloudinary.uploader.upload(profileImg);
-      //   user.profileImg = uploadedImg.secure_url;
-      // }
-      // if (coverImg) {
-      //   if (user.coverImg) {
-      //     //Let's say the img url is like this: https://res.cloudinary.com/something/something/123456.png
-      //     await cloudinary.uploader.destroy(
-      //       user.coverImg.split("/").pop().split(".")[0]
-      //     );
-      //   }
-      //   const uploadedImg = await cloudinary.uploader.upload(coverImg);
-      //   user.coverImg = uploadedImg.secure_url;
-      // }
-      //------------------------------------------------------------------------------
-
-      //Using Firebase instead
-      //------------------------------------------------------------------------------
-      if (profileImg) {
-        try {
-          uploadProfileOrCoverImg(profileImg, user);
-        } catch (error) {
-          res
-            .status(400)
-            .json({ error: "Error during uploading profile image" });
-        }
-      }
-      if (coverImg) {
-        try {
-          uploadProfileOrCoverImg(coverImg, user);
-        } catch (error) {
-          res.status(400).json({ error: "Error during uploading cover image" });
-        }
-      }
-      //------------------------------------------------------------------------------
+      user.password = await bcrypt.hash(newPassword, salt);
     }
+    //Cloudinary is not available in my country,
+    // but this is how it goes if the user wants to edit profile or cover images
+    //------------------------------------------------------------------------------
+    // if (profileImg) {
+    //   if (user.profileImg) {
+    //     //Let's say the img url is like this: https://res.cloudinary.com/something/something/123456.png
+    //     await cloudinary.uploader.destroy(
+    //       user.profileImg.split("/").pop().split(".")[0]
+    //     );
+    //   }
+    //   const uploadedImg = await cloudinary.uploader.upload(profileImg);
+    //   user.profileImg = uploadedImg.secure_url;
+    // }
+    // if (coverImg) {
+    //   if (user.coverImg) {
+    //     //Let's say the img url is like this: https://res.cloudinary.com/something/something/123456.png
+    //     await cloudinary.uploader.destroy(
+    //       user.coverImg.split("/").pop().split(".")[0]
+    //     );
+    //   }
+    //   const uploadedImg = await cloudinary.uploader.upload(coverImg);
+    //   user.coverImg = uploadedImg.secure_url;
+    // }
+    //------------------------------------------------------------------------------
+
+    //Using Firebase instead
+    //------------------------------------------------------------------------------
+    // if (profileImg) {
+    //   try {
+    //     uploadProfileOrCoverImg(profileImg, user);
+    //   } catch (error) {
+    //     return res
+    //       .status(400)
+    //       .json({ error: "Error during uploading profile image" });
+    //   }
+    // }
+    // if (coverImg) {
+    //   try {
+    //     uploadProfileOrCoverImg(coverImg, user);
+    //   } catch (error) {
+    //     return res
+    //       .status(400)
+    //       .json({ error: "Error during uploading cover image" });
+    //   }
+    // }
+    //------------------------------------------------------------------------------
 
     user.fullname = fullname || user.fullname;
     user.username = username || user.username;
     user.email = email || user.email;
     user.bio = bio || user.bio;
     user.link = link || user.link;
-    user.profileImg = profileImg || user.profileImg;
-    user.coverImg = coverImg || user.coverImg;
 
     user = await user.save();
 
@@ -191,5 +201,38 @@ export const updateUserProfile = async (req, res) => {
   } catch (error) {
     console.log("Error in updateUserProfile", error.message);
     res.status(500).json({ error: error.message });
+  }
+};
+
+// New controller for image upload
+export const updateUserImages = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if profile image is provided
+    if (req.files?.profileImg) {
+      const profileImg = req.files.profileImg[0].buffer;
+      const profileImgURL = await uploadProfileOrCoverImg(profileImg, user, 1);
+      user.profileImg = profileImgURL;
+    }
+
+    // Check if cover image is provided
+    if (req.files?.coverImg) {
+      const coverImg = req.files.coverImg[0].buffer;
+      const coverImgURL = await uploadProfileOrCoverImg(coverImg, user, 0);
+      user.coverImg = coverImgURL;
+    }
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Images updated successfully", user });
+  } catch (error) {
+    console.error("Error updating images:", error);
+    return res.status(500).json({ error: error.message });
   }
 };

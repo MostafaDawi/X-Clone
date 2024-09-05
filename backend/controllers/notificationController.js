@@ -11,7 +11,7 @@ export const getNotifications = async (req, res) => {
 
     await Notification.updateMany({ to: userId }, { read: true });
 
-    res.status(200).json({ notifications });
+    res.status(200).json(notifications);
   } catch (error) {
     console.log("Error fetching the notifications", error.message);
     res.status(500).json({ error: "Internal Server Error" });

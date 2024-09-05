@@ -167,7 +167,6 @@ export const getAllPosts = async (req, res) => {
         select: "-password",
       });
     if (posts.length === 0) return res.status(200).json([]);
-    console.log("requested posts are: ", posts);
     return res.status(200).json(posts);
   } catch (error) {
     console.log("Error while fetching the posts", error.message);
@@ -207,7 +206,7 @@ export const getLikedPosts = async (req, res) => {
         select: "-password",
       });
 
-    res.status(200).json({ likedPosts });
+    res.status(200).json(likedPosts);
   } catch (error) {
     console.log("Error fetching the liked posts", error.message);
     res.status(500).json({ error: "Internal Server Error" });

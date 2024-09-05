@@ -4,21 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const Posts = ({ feedType }) => {
-  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: user } = useQuery({ queryKey: ["user"] });
 
   const getPostEndpoint = () => {
     switch (feedType) {
       case "forYou":
-        return "api/posts/all";
+        return "/api/posts/all";
       case "likes":
-        return `api/posts/likes/${authUser._id}`;
+        return `/api/posts/likes/${user?._id}`;
       case "following":
-        return "api/posts/following";
-      case "myPosts":
-        console.log(authUser.username);
-        return `api/posts/user/${authUser?.username}`;
-      default:
-        return `api/posts/user/${authUser?.username}`;
+        return "/api/posts/following";
+      case "userPosts":
+        return `/api/posts/user/${user?.username}`;
     }
   };
 
@@ -49,7 +46,7 @@ const Posts = ({ feedType }) => {
 
   useEffect(() => {
     refetch();
-  }, [feedType, refetch]);
+  }, [feedType, refetch, user]);
 
   return (
     <>
