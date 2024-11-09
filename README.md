@@ -1,5 +1,5 @@
 # X Clone | Full Stack Web Application
-A social media platform cloned from X (formerly known as Twitter), developed using the MERN stack. It presents an environment where people can interact with one another whether by posting or reacting to each others posts.
+  A social media platform cloned from X (formerly known as Twitter), developed using the MERN stack. It presents an environment where people can interact with one another whether by posting or reacting to each others posts.
 
 # Key Features
 - **Registration and Login**:
@@ -39,5 +39,5 @@ A social media platform cloned from X (formerly known as Twitter), developed usi
 - **Firebase Storage and Multer**:
   - Firebase storage is used to store images, and multer is utilized for the various firestore operations and functions.
   
-
-This application was developed with the aim of providing people with a social environment that they can use to connect and interact with each other, creating networks and closing the distances between them. Future enhancements and features will be added as the community demands!
+# Summary
+  This application was developed with the aim of providing people with a social environment that they can use to connect and interact with each other, creating networks and closing the distances between them. Future enhancements and features will be added as the community demands!
