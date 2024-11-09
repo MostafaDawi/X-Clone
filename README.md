@@ -3,7 +3,7 @@
 
 # Key Features
 - **Registration and Login**
-- Registering an account is needed to be able to post and interact with others
+  Registering an account is needed to be able to post and interact with others
   
 - **Creating posts**
 - Users have the ability to post and share their thoughts on their timelines with text and images.
