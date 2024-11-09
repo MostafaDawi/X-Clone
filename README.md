@@ -20,3 +20,18 @@ A social media platform cloned from X (formerly known as Twitter), developed usi
 - **Receive notifications**:
   - Upon following users or liking posts, they will receive an appropriate notification showcasing the type of interaction.
 
+# Technologies and Libraries Used:
+- **MERN Stack**:
+- This full stack application was built using the frameworks, React for frontend and Express and MongoDB for the backend, leveraging the use of Javascript and its runtime in environment (Node.js).
+- **JWT**:
+- JsonWebToken was used to provide users with a token after logging in, authorizing them to use the application.
+- **tanstack/react-query**:
+- Tanstack Query library is used for data fetching and state management.
+- **Mongoose**:
+- To carry database operations against MongoDB.
+- **CORS**:
+- Used as a security mechanism in the browser, utilizing the same-origin policy.
+- **Firebase Storage and Multer**:
+- Firebase storage is used to store images, and multer is utilized for the various firestore operations and functions.
+
+This application was developed with the aim of providing people with a social environment that they can use to connect and interact with each other, creating networks and closing the distances between them. Future enhancements and features will be added as the community demands!
