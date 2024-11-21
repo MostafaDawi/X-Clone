@@ -40,4 +40,4 @@
   - Firebase storage is used to store images, and multer is utilized for the various firestore operations and functions.
   
 # Summary
-  This application was developed with the aim of providing people with a social environment that they can use to connect and interact with each other, creating networks and closing the distances between them. Future enhancements and features will be added as the community demands!
+  This application was developed with the aim of providing people with a social environment that they can use to post and interact with each other, creating networks and closing the distances between them. Future enhancements and features will be added as the community demands!
