@@ -14,7 +14,7 @@
   - Users can choose to follow, like, or comment on other people's posts in real-time.
   
 - **Customize profile**:
-  - Each user is eligle to customize their own profile page.
+  - Each user is able to customize their own profile page.
   - A user can edit their personal information (bio, links, profile picture, and more..).
   
 - **Receive notifications**:
@@ -22,7 +22,7 @@
 
 # Technologies and Libraries Used:
 - **MERN Stack**:
-  - This full stack application was built using the frameworks, React for frontend and Express and MongoDB for the backend, leveraging the use of Javascript and its runtime in environment (Node.js).
+  - This full stack application was built using the frameworks, React for frontend and Express and MongoDB for the backend, leveraging the use of Javascript and its runtime environment (Node.js).
   
 - **JWT**:
   - JsonWebToken was used to provide users with a token after logging in, authorizing them to use the application.
