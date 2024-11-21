@@ -2,23 +2,38 @@
   A social media platform cloned from X (formerly known as Twitter), developed using the MERN stack. It presents an environment where people can interact with one another whether by posting or reacting to each others posts.
 
 # Key Features
+- **Post Creation**:
+  - Users can create posts and showcase it in front of other users.
+  - Images and texts are the type of media to showcase posts.
+
+- **User Interaction**:
+  - People can react to posts in real-time, allowing for a better interactions.
+  - Following other users is set to allow people to connect and create a network.
+  
+- **Friendly UI**:
+  - Flexible and intuitive user interface easing up the navigation for a wider audience.
+  - Home tab representing "For You" and "Following" sub-tabs to categorize types of posts to be seen.
+  - Profile tab to manage user personal information and posts.
+  - Notifications tab showcasing the types of user interactions received.
+
+# How to Use
 - **Registration and Login**:
-  - Users should register an account by passing their credentials
-  - After the the registration process, users can choose to login and start interacting.
+  - Register to create an account. 
+  - Log into your account and start posting and interacting.
   
 - **Creating posts**:
-  - Users have the ability to create posts and share their thoughts on their timelines.
-  - They can use different media like text and images.
+  - Create posts and share your thoughts on your timeline.
+  - Use different media like text and images in your posts.
   
 - **Interaction with other users**:
-  - Users can choose to follow, like, or comment on other people's posts in real-time.
+  - Follow, Like, or Comment on other people's posts in real-time.
   
 - **Customize profile**:
-  - Each user is able to customize their own profile page.
-  - A user can edit their personal information (bio, links, profile picture, and more..).
+  - Customize your profile page.
+  - Edit your personal information (bio, links, profile picture, and more..).
   
 - **Receive notifications**:
-  - Upon following users or liking posts, they will receive an appropriate notification showcasing the type of interaction.
+  - Users will receive an appropriate notification showcasing your type of interaction with them.
 
 # Technologies and Libraries Used:
 - **MERN Stack**:
