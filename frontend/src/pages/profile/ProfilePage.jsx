@@ -34,7 +34,8 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
 
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
-  const isMyProfile = username === authUser.username;
+  const queryClient = useQueryClient();
+  const { follow, isPending } = useFollow();
 
   const {
     data: userProfile,
@@ -54,6 +55,11 @@ const ProfilePage = () => {
       }
     },
   });
+
+  const isMyProfile = userProfile?._id === authUser?._id;
+  const [isFollowing, setIsFollowing] = useState(
+    authUser?.following.includes(userProfile?._id)
+  );
 
   console.log("Fetched user is ", userProfile);
 
@@ -113,8 +119,6 @@ const ProfilePage = () => {
       updateImages();
     }
   };
-
-  const { follow, isPending } = useFollow();
 
   useEffect(() => {
     refetch();
@@ -212,17 +216,20 @@ const ProfilePage = () => {
                     coverImg={coverImg}
                   />
                 )}
-                {!isMyProfile && (
+                {!isMyProfile && !isPending && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
                     onClick={(e) => {
-                      e.preventDefault();
-                      follow(userProfile._id);
+                      setIsFollowing(!isFollowing);
+                      follow(userProfile?._id);
                     }}
                   >
-                    Follow
+                    {isPending && <LoadingSpinner />}
+                    {isFollowing && !isPending && "Unfollow"}
+                    {!isFollowing && !isPending && "Follow"}
                   </button>
                 )}
+
                 {/* {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
